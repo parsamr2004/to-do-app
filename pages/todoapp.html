@@ -1,0 +1,2400 @@
+<!DOCTYPE html>
+<html lang="Fa-IR" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo App</title>
+    <link rel="stylesheet" href="../src/style.css" />
+    <script src="https://unpkg.com/jalali-moment/dist/jalali-moment.browser.js"></script>
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="../src/assets/favicon_io/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../src/assets/favicon_io/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../src/assets/favicon_io/favicon-16x16.png"
+    />
+    <link rel="manifest" href="../src/assets/favicon_io/site.webmanifest" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style type="text/tailwindcss">
+      @import "tailwindcss";
+      @custom-variant dark (&:where(.dark, .dark *));
+    </style>
+    <style>
+      .scroll-hidden {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      .scroll-hidden::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="bg-[#FEFEFE] dark:bg-[#060C18] min-h-screen md:flex z-0">
+    <!-- header -->
+    <header class="container p-3 mx-auto md:h-[100%] md:max-w-[272px]">
+      <nav
+        class="flex justify-between w-full p-3 rounded-lg shadow-sm md:shadow-xl md:h-[100%] md:rounded-2xl md:flex-col md:justify-normal md:items-center md:px-4 dark:bg-[#091120]"
+      >
+        <!-- mobile nav -->
+        <svg
+          id="light-hamburger-svg"
+          class="cursor-pointer md:hidden dark:hidden"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3 7H21"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <path
+            d="M3 12H21"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <path
+            d="M3 17H21"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        </svg>
+
+        <svg
+          id="dark-hamburger-svg"
+          class="hidden cursor-pointer dark:block md:dark:hidden"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3 7H21"
+            stroke="white"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <path
+            d="M3 12H21"
+            stroke="white"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <path
+            d="M3 17H21"
+            stroke="white"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        </svg>
+
+        <p class="md:hidden dark:text-[#FFFFFF] text-[16px] font-bold">
+          کوئرا لیست
+        </p>
+
+        <svg
+          class="opacity-0 md:hidden"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3 7H21"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <path
+            d="M3 12H21"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <path
+            d="M3 17H21"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        </svg>
+
+        <!-- desktop nav -->
+        <section class="items-center hidden gap-3 mt-10 md:flex h-fit">
+          <img
+            src="../src/assets/images/user5.png"
+            alt="profile-picture"
+            class="w-[56px] h-[56px] object-cover hidden md:block"
+          />
+          <div class="flex-col hidden md:flex gap-y-2">
+            <h4
+              class="text-[18px] font-extrabold text-[#242424] dark:text-[#FFFFFF]"
+            >
+              سلام، پارسا!
+            </h4>
+            <p
+              class="text-[14px] font-semibold text-[#7D7D7F] dark:text-[#848890]"
+            >
+              امروز <span id="sidebar-date"></span>
+            </p>
+          </div>
+        </section>
+
+        <section class="hidden md:flex md:flex-col mt-[74px] w-full gap-3">
+          <div
+            class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+          >
+            <div class="flex items-center gap-2">
+              <svg
+                class="w-[20px] h-[20px]"
+                xmlns="http://www.w3.org/2000/svg"
+                width="800px"
+                height="800px"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M12 15L12 18"
+                  stroke="#525252"
+                  class="dark:stroke-[#FFFFFF]"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M21.6359 12.9579L21.3572 14.8952C20.8697 18.2827 20.626 19.9764 19.451 20.9882C18.2759 22 16.5526 22 13.1061 22H10.8939C7.44737 22 5.72409 22 4.54903 20.9882C3.37396 19.9764 3.13025 18.2827 2.64284 14.8952L2.36407 12.9579C1.98463 10.3208 1.79491 9.00229 2.33537 7.87495C2.87583 6.7476 4.02619 6.06234 6.32691 4.69181L7.71175 3.86687C9.80104 2.62229 10.8457 2 12 2C13.1543 2 14.199 2.62229 16.2882 3.86687L17.6731 4.69181C19.9738 6.06234 21.1242 6.7476 21.6646 7.87495"
+                  stroke="#525252"
+                  class="dark:stroke-[#FFFFFF]"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span
+                class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+                >خانه</span
+              >
+            </div>
+          </div>
+          <div
+            class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+          >
+            <div class="flex items-center gap-2">
+              <svg
+                class="dark:hidden"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g clip-path="url(#clip0_2009_3324)">
+                  <path
+                    d="M10.3086 7.40002H14.6836"
+                    stroke="#525252"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M5.31641 7.40002L5.94141 8.02502L7.81641 6.15002"
+                    stroke="#525252"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M10.3086 13.2333H14.6836"
+                    stroke="#525252"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M5.31641 13.2333L5.94141 13.8583L7.81641 11.9833"
+                    stroke="#525252"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M7.49935 18.3334H12.4993C16.666 18.3334 18.3327 16.6667 18.3327 12.5V7.50002C18.3327 3.33335 16.666 1.66669 12.4993 1.66669H7.49935C3.33268 1.66669 1.66602 3.33335 1.66602 7.50002V12.5C1.66602 16.6667 3.33268 18.3334 7.49935 18.3334Z"
+                    stroke="#525252"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_2009_3324">
+                    <rect width="20" height="20" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+
+              <svg
+                class="hidden dark:block"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g clip-path="url(#clip0_82_8147)">
+                  <path
+                    d="M10.3066 7.3999H14.6816"
+                    stroke="white"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M5.31641 7.3999L5.94141 8.0249L7.81641 6.1499"
+                    stroke="white"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M10.3066 13.2333H14.6816"
+                    stroke="white"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M5.31641 13.2333L5.94141 13.8583L7.81641 11.9833"
+                    stroke="white"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M7.49935 18.3333H12.4993C16.666 18.3333 18.3327 16.6666 18.3327 12.5V7.49996C18.3327 3.33329 16.666 1.66663 12.4993 1.66663H7.49935C3.33268 1.66663 1.66602 3.33329 1.66602 7.49996V12.5C1.66602 16.6666 3.33268 18.3333 7.49935 18.3333Z"
+                    stroke="white"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_82_8147">
+                    <rect width="20" height="20" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+
+              <span
+                class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+                >تسک‌ها</span
+              >
+            </div>
+          </div>
+          <div
+            class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+          >
+            <div class="flex items-center gap-2">
+              <svg
+                class="dark:hidden"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6.66602 1.66669V4.16669"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M13.334 1.66669V4.16669"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M2.91602 7.57495H17.0827"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M17.5 7.08335V14.1667C17.5 16.6667 16.25 18.3334 13.3333 18.3334H6.66667C3.75 18.3334 2.5 16.6667 2.5 14.1667V7.08335C2.5 4.58335 3.75 2.91669 6.66667 2.91669H13.3333C16.25 2.91669 17.5 4.58335 17.5 7.08335Z"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M13.0781 11.4167H13.0856"
+                  stroke="#525252"
+                  stroke-width="1.66667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M13.0781 13.9167H13.0856"
+                  stroke="#525252"
+                  stroke-width="1.66667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M9.99607 11.4167H10.0036"
+                  stroke="#525252"
+                  stroke-width="1.66667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M9.99607 13.9167H10.0036"
+                  stroke="#525252"
+                  stroke-width="1.66667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M6.91209 11.4167H6.91957"
+                  stroke="#525252"
+                  stroke-width="1.66667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M6.91209 13.9167H6.91957"
+                  stroke="#525252"
+                  stroke-width="1.66667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <svg
+                class="hidden dark:block"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6.66602 1.66675V4.16675"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M13.334 1.66675V4.16675"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M2.91602 7.57495H17.0827"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M17.5 7.08341V14.1667C17.5 16.6667 16.25 18.3334 13.3333 18.3334H6.66667C3.75 18.3334 2.5 16.6667 2.5 14.1667V7.08341C2.5 4.58341 3.75 2.91675 6.66667 2.91675H13.3333C16.25 2.91675 17.5 4.58341 17.5 7.08341Z"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M13.0781 11.4167H13.0856"
+                  stroke="white"
+                  stroke-width="1.66667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M13.0781 13.9167H13.0856"
+                  stroke="white"
+                  stroke-width="1.66667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M9.99607 11.4167H10.0036"
+                  stroke="white"
+                  stroke-width="1.66667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M9.99607 13.9167H10.0036"
+                  stroke="white"
+                  stroke-width="1.66667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M6.91209 11.4167H6.91957"
+                  stroke="white"
+                  stroke-width="1.66667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M6.91209 13.9167H6.91957"
+                  stroke="white"
+                  stroke-width="1.66667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <span
+                class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+                >تقویم</span
+              >
+            </div>
+          </div>
+          <div
+            class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+          >
+            <div class="flex items-center gap-2">
+              <svg
+                class="dark:hidden"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g clip-path="url(#clip0_2009_3330)">
+                  <path
+                    d="M7.49935 18.3334H12.4993C16.666 18.3334 18.3327 16.6667 18.3327 12.5V7.50002C18.3327 3.33335 16.666 1.66669 12.4993 1.66669H7.49935C3.33268 1.66669 1.66602 3.33335 1.66602 7.50002V12.5C1.66602 16.6667 3.33268 18.3334 7.49935 18.3334Z"
+                    stroke="#525252"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M8.48255 14.2916L5.94922 11.7583"
+                    stroke="#525252"
+                    stroke-width="1.25"
+                    stroke-miterlimit="10"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M8.48242 5.70831V14.2916"
+                    stroke="#525252"
+                    stroke-width="1.25"
+                    stroke-miterlimit="10"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M11.5176 5.70831L14.0509 8.24165"
+                    stroke="#525252"
+                    stroke-width="1.25"
+                    stroke-miterlimit="10"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M11.5176 14.2916V5.70831"
+                    stroke="#525252"
+                    stroke-width="1.25"
+                    stroke-miterlimit="10"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_2009_3330">
+                    <rect width="20" height="20" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+
+              <svg
+                class="hidden dark:block"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M7.49935 18.3334H12.4993C16.666 18.3334 18.3327 16.6667 18.3327 12.5001V7.50008C18.3327 3.33341 16.666 1.66675 12.4993 1.66675H7.49935C3.33268 1.66675 1.66602 3.33341 1.66602 7.50008V12.5001C1.66602 16.6667 3.33268 18.3334 7.49935 18.3334Z"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M8.48451 14.2916L5.95117 11.7583"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M8.48242 5.7085V14.2918"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M11.5176 5.7085L14.0509 8.24183"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M11.5176 14.2918V5.7085"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <span
+                class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+                >گزارشات</span
+              >
+            </div>
+          </div>
+          <div
+            class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+          >
+            <div class="flex items-start gap-2">
+              <svg
+                class="dark:hidden"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M2.5 7.59163V12.4C2.5 14.1666 2.5 14.1666 4.16667 15.2916L8.75 17.9416C9.44167 18.3416 10.5667 18.3416 11.25 17.9416L15.8333 15.2916C17.5 14.1666 17.5 14.1666 17.5 12.4083V7.59163C17.5 5.8333 17.5 5.8333 15.8333 4.7083L11.25 2.0583C10.5667 1.6583 9.44167 1.6583 8.75 2.0583L4.16667 4.7083C2.5 5.8333 2.5 5.8333 2.5 7.59163Z"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <svg
+                class="hidden dark:block"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M2.5 7.59163V12.4C2.5 14.1666 2.5 14.1666 4.16667 15.2916L8.75 17.9416C9.44167 18.3416 10.5667 18.3416 11.25 17.9416L15.8333 15.2916C17.5 14.1666 17.5 14.1666 17.5 12.4083V7.59163C17.5 5.8333 17.5 5.8333 15.8333 4.7083L11.25 2.0583C10.5667 1.6583 9.44167 1.6583 8.75 2.0583L4.16667 4.7083C2.5 5.8333 2.5 5.8333 2.5 7.59163Z"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <span
+                class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+                >تنظیمات</span
+              >
+            </div>
+          </div>
+          <div
+            class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+          >
+            <div class="flex items-center gap-2">
+              <svg
+                class="dark:hidden"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15 15.7166H14.3667C13.7 15.7166 13.0667 15.975 12.6 16.4416L11.175 17.85C10.525 18.4917 9.46667 18.4917 8.81667 17.85L7.39166 16.4416C6.925 15.975 6.28333 15.7166 5.625 15.7166H5C3.61667 15.7166 2.5 14.6083 2.5 13.2417V4.14996C2.5 2.7833 3.61667 1.67499 5 1.67499H15C16.3833 1.67499 17.5 2.7833 17.5 4.14996V13.2417C17.5 14.6 16.3833 15.7166 15 15.7166Z"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M5.83398 7.63336C5.83398 6.85836 6.46732 6.22498 7.24232 6.22498C8.01732 6.22498 8.65065 6.85836 8.65065 7.63336C8.65065 9.20003 6.42565 9.36669 5.93398 10.8584C5.83398 11.1667 6.09232 11.475 6.41732 11.475H8.65065"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M13.3655 11.4667V6.70838C13.3655 6.49171 13.2238 6.3 13.0155 6.24166C12.8072 6.18333 12.5822 6.26666 12.4655 6.45C11.8655 7.41666 11.2155 8.51667 10.6488 9.48334C10.5572 9.64167 10.5572 9.85001 10.6488 10.0083C10.7405 10.1667 10.9155 10.2666 11.1072 10.2666H14.1655"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <svg
+                class="hidden dark:block"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15 15.7167H14.3667C13.7 15.7167 13.0667 15.975 12.6 16.4417L11.175 17.8501C10.525 18.4917 9.46667 18.4917 8.81667 17.8501L7.39166 16.4417C6.925 15.975 6.28333 15.7167 5.625 15.7167H5C3.61667 15.7167 2.5 14.6084 2.5 13.2417V4.15002C2.5 2.78336 3.61667 1.67505 5 1.67505H15C16.3833 1.67505 17.5 2.78336 17.5 4.15002V13.2417C17.5 14.6001 16.3833 15.7167 15 15.7167Z"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M5.83398 7.63324C5.83398 6.85824 6.46732 6.22485 7.24232 6.22485C8.01732 6.22485 8.65065 6.85824 8.65065 7.63324C8.65065 9.19991 6.42565 9.36657 5.93398 10.8582C5.83398 11.1666 6.09232 11.4749 6.41732 11.4749H8.65065"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M13.3655 11.4666V6.70826C13.3655 6.49159 13.2238 6.29987 13.0155 6.24154C12.8072 6.18321 12.5822 6.26654 12.4655 6.44987C11.8655 7.41654 11.2155 8.51655 10.6488 9.48322C10.5572 9.64155 10.5572 9.84989 10.6488 10.0082C10.7405 10.1666 10.9155 10.2665 11.1072 10.2665H14.1655"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <span
+                class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+                >پشتیبانی</span
+              >
+            </div>
+          </div>
+          <div
+            class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+          >
+            <div class="flex items-center gap-2">
+              <svg
+                class="dark:hidden"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10.1322 9.05835C10.0488 9.05002 9.94883 9.05002 9.85716 9.05835C7.87383 8.99169 6.29883 7.36669 6.29883 5.36669C6.29883 3.32502 7.94883 1.66669 9.99883 1.66669C12.0405 1.66669 13.6988 3.32502 13.6988 5.36669C13.6905 7.36669 12.1155 8.99169 10.1322 9.05835Z"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M5.96562 12.1333C3.94896 13.4833 3.94896 15.6833 5.96562 17.025C8.25729 18.5583 12.0156 18.5583 14.3073 17.025C16.324 15.675 16.324 13.475 14.3073 12.1333C12.024 10.6083 8.26562 10.6083 5.96562 12.1333Z"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <svg
+                class="hidden dark:block"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10.1341 9.05841C10.0508 9.05008 9.95078 9.05008 9.85911 9.05841C7.87578 8.99175 6.30078 7.36675 6.30078 5.36675C6.30078 3.32508 7.95078 1.66675 10.0008 1.66675C12.0424 1.66675 13.7008 3.32508 13.7008 5.36675C13.6924 7.36675 12.1174 8.99175 10.1341 9.05841Z"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M5.96758 12.1333C3.95091 13.4833 3.95091 15.6833 5.96758 17.0249C8.25924 18.5583 12.0176 18.5583 14.3092 17.0249C16.3259 15.6749 16.3259 13.4749 14.3092 12.1333C12.0259 10.6083 8.26758 10.6083 5.96758 12.1333Z"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <span
+                class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+                >پروفایل</span
+              >
+            </div>
+          </div>
+        </section>
+
+        <section class="hidden w-full mt-55 md:flex md:flex-col">
+          <div
+            class="bg-[#F7F7F7] dark:bg-[#0C1B31] w-full rounded-lg p-1 flex justify-between"
+          >
+            <div
+              class="flex bg-white dark:bg-[#0C1B31] p-[6px_16px_6px_20px] rounded-md items-center gap-3 cursor-pointer"
+              id="light-mode-click"
+            >
+              <svg
+                class="dark:hidden"
+                width="17"
+                height="16"
+                viewBox="0 0 17 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8.49935 12.3333C10.8926 12.3333 12.8327 10.3932 12.8327 7.99996C12.8327 5.60673 10.8926 3.66663 8.49935 3.66663C6.10612 3.66663 4.16602 5.60673 4.16602 7.99996C4.16602 10.3932 6.10612 12.3333 8.49935 12.3333Z"
+                  stroke="#525252"
+                  stroke-width="1.16667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M13.2597 12.7599L13.173 12.6733M13.173 3.32659L13.2597 3.23992L13.173 3.32659ZM3.73967 12.7599L3.82634 12.6733L3.73967 12.7599ZM8.49967 1.38659V1.33325V1.38659ZM8.49967 14.6666V14.6133V14.6666ZM1.88634 7.99992H1.83301H1.88634ZM15.1663 7.99992H15.113H15.1663ZM3.82634 3.32659L3.73967 3.23992L3.82634 3.32659Z"
+                  stroke="#525252"
+                  stroke-width="1.55556"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <svg
+                class="hidden dark:block"
+                width="17"
+                height="16"
+                viewBox="0 0 17 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8.5013 12.3334C10.8945 12.3334 12.8346 10.3933 12.8346 8.00008C12.8346 5.60685 10.8945 3.66675 8.5013 3.66675C6.10807 3.66675 4.16797 5.60685 4.16797 8.00008C4.16797 10.3933 6.10807 12.3334 8.5013 12.3334Z"
+                  stroke="#7A7A7A"
+                  stroke-width="1.16667"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M13.2607 12.7602L13.174 12.6735M13.174 3.32683L13.2607 3.24016L13.174 3.32683ZM3.74065 12.7602L3.82732 12.6735L3.74065 12.7602ZM8.50065 1.38683V1.3335V1.38683ZM8.50065 14.6668V14.6135V14.6668ZM1.88732 8.00016H1.83398H1.88732ZM15.1673 8.00016H15.114H15.1673ZM3.82732 3.32683L3.74065 3.24016L3.82732 3.32683Z"
+                  stroke="#7A7A7A"
+                  stroke-width="1.55556"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <span
+                class="text-[14px] text-[#525252] dark:text-[#7A7A7A] font-semibold"
+                >روشن</span
+              >
+            </div>
+
+            <div
+              class="flex p-[6px_16px_6px_20px] dark:bg-[#002247] rounded-md items-center gap-3 cursor-pointer"
+              id="dark-mode-click"
+            >
+              <svg
+                class="dark:hidden"
+                width="17"
+                height="16"
+                viewBox="0 0 17 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1.85307 8.27997C2.09307 11.7133 5.0064 14.5066 8.49307 14.66C10.9531 14.7666 13.1531 13.62 14.4731 11.8133C15.0197 11.0733 14.7264 10.58 13.8131 10.7466C13.3664 10.8266 12.9064 10.86 12.4264 10.84C9.1664 10.7066 6.49973 7.97997 6.4864 4.75997C6.47973 3.89331 6.65973 3.07331 6.9864 2.32664C7.3464 1.49997 6.91307 1.10664 6.07973 1.45997C3.43973 2.57331 1.63307 5.23331 1.85307 8.27997Z"
+                  stroke="#808080"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <svg
+                class="hidden dark:block"
+                width="17"
+                height="16"
+                viewBox="0 0 17 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1.85209 8.27997C2.09209 11.7133 5.00542 14.5066 8.49209 14.66C10.9521 14.7666 13.1521 13.62 14.4721 11.8133C15.0188 11.0733 14.7254 10.58 13.8121 10.7466C13.3654 10.8266 12.9054 10.86 12.4254 10.84C9.16542 10.7066 6.49876 7.97997 6.48542 4.75997C6.47876 3.89331 6.65876 3.07331 6.98542 2.32664C7.34542 1.49997 6.91209 1.10664 6.07876 1.45997C3.43876 2.57331 1.63209 5.23331 1.85209 8.27997Z"
+                  stroke="white"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <span
+                class="text-[14px] text-[#808080] dark:text-[#FFFFFF] font-semibold"
+                >تاریک</span
+              >
+            </div>
+          </div>
+
+          <div class="w-full bg-[#E9E9E9] dark:bg-[#2F3132] h-[1px] mt-7"></div>
+
+          <div class="flex w-full gap-4 my-5 cursor-pointer">
+            <svg
+              class="dark:hidden"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clip-path="url(#clip0_2010_2699)">
+                <path
+                  d="M7.41699 6.29995C7.67533 3.29995 9.21699 2.07495 12.592 2.07495H12.7003C16.4253 2.07495 17.917 3.56662 17.917 7.29162V12.725C17.917 16.45 16.4253 17.9416 12.7003 17.9416H12.592C9.24199 17.9416 7.70033 16.7333 7.42533 13.7833"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M12.4999 10H3.0166"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M4.87467 7.20837L2.08301 10L4.87467 12.7917"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_2010_2699">
+                  <rect width="20" height="20" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+
+            <svg
+              class="hidden dark:block"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clip-path="url(#clip0_82_8174)">
+                <path
+                  d="M7.41602 6.29995C7.67435 3.29995 9.21602 2.07495 12.591 2.07495H12.6993C16.4243 2.07495 17.916 3.56662 17.916 7.29162V12.725C17.916 16.45 16.4243 17.9416 12.6993 17.9416H12.591C9.24102 17.9416 7.69935 16.7333 7.42435 13.7833"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M12.499 10H3.01562"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M4.87565 7.20825L2.08398 9.99992L4.87565 12.7916"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_82_8174">
+                  <rect width="20" height="20" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+
+            <span
+              class="text-[14px] text-[#525252] dark:text-[#FFFFFF] font-semibold"
+              ><a href="../index.html">خروج</a></span
+            >
+          </div>
+        </section>
+      </nav>
+    </header>
+
+    <!-- hamburger click navbar  -->
+    <section
+      class="hidden md:hidden w-[60%] fixed inset-y-0 bg-[#FFFFFF] dark:bg-[#091120] shadow-lg p-4 overflow-y-scroll scroll-hidden z-1"
+      id="vertical-nav-menu"
+    >
+      <section class="flex justify-between p-[12px_12px_12px_0]">
+        <span class="dark:text-[#FFFFFF]">کوئرا لیست</span>
+        <svg
+          id="close-light-svg"
+          class="cursor-pointer dark:hidden"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          id="hamburger-close"
+        >
+          <path
+            d="M7 17L17.0003 6.99966"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M17.0003 17L7 6.99966"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+
+        <svg
+          id="close-dark-svg"
+          class="hidden cursor-pointer dark:block"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M7 17L17.0003 6.99963"
+            stroke="white"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M17.0003 17L7 6.99963"
+            stroke="white"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </section>
+
+      <section class="flex flex-col w-full gap-4 mt-8">
+        <div
+          class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+        >
+          <div class="flex items-center gap-2">
+            <svg
+              class="w-[20px] h-[20px]"
+              xmlns="http://www.w3.org/2000/svg"
+              width="800px"
+              height="800px"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M12 15L12 18"
+                stroke="#525252"
+                class="dark:stroke-[#FFFFFF]"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M21.6359 12.9579L21.3572 14.8952C20.8697 18.2827 20.626 19.9764 19.451 20.9882C18.2759 22 16.5526 22 13.1061 22H10.8939C7.44737 22 5.72409 22 4.54903 20.9882C3.37396 19.9764 3.13025 18.2827 2.64284 14.8952L2.36407 12.9579C1.98463 10.3208 1.79491 9.00229 2.33537 7.87495C2.87583 6.7476 4.02619 6.06234 6.32691 4.69181L7.71175 3.86687C9.80104 2.62229 10.8457 2 12 2C13.1543 2 14.199 2.62229 16.2882 3.86687L17.6731 4.69181C19.9738 6.06234 21.1242 6.7476 21.6646 7.87495"
+                stroke="#525252"
+                class="dark:stroke-[#FFFFFF]"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <span
+              class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+              >خانه</span
+            >
+          </div>
+        </div>
+        <div
+          class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+        >
+          <div class="flex items-center gap-2">
+            <svg
+              class="dark:hidden"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clip-path="url(#clip0_2009_3324)">
+                <path
+                  d="M10.3086 7.40002H14.6836"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M5.31641 7.40002L5.94141 8.02502L7.81641 6.15002"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M10.3086 13.2333H14.6836"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M5.31641 13.2333L5.94141 13.8583L7.81641 11.9833"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M7.49935 18.3334H12.4993C16.666 18.3334 18.3327 16.6667 18.3327 12.5V7.50002C18.3327 3.33335 16.666 1.66669 12.4993 1.66669H7.49935C3.33268 1.66669 1.66602 3.33335 1.66602 7.50002V12.5C1.66602 16.6667 3.33268 18.3334 7.49935 18.3334Z"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_2009_3324">
+                  <rect width="20" height="20" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+
+            <svg
+              class="hidden dark:block"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clip-path="url(#clip0_82_8147)">
+                <path
+                  d="M10.3066 7.3999H14.6816"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M5.31641 7.3999L5.94141 8.0249L7.81641 6.1499"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M10.3066 13.2333H14.6816"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M5.31641 13.2333L5.94141 13.8583L7.81641 11.9833"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M7.49935 18.3333H12.4993C16.666 18.3333 18.3327 16.6666 18.3327 12.5V7.49996C18.3327 3.33329 16.666 1.66663 12.4993 1.66663H7.49935C3.33268 1.66663 1.66602 3.33329 1.66602 7.49996V12.5C1.66602 16.6666 3.33268 18.3333 7.49935 18.3333Z"
+                  stroke="white"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_82_8147">
+                  <rect width="20" height="20" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+
+            <span
+              class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+              >تسک‌ها</span
+            >
+          </div>
+        </div>
+        <div
+          class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+        >
+          <div class="flex items-center gap-2">
+            <svg
+              class="dark:hidden"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6.66602 1.66669V4.16669"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M13.334 1.66669V4.16669"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M2.91602 7.57495H17.0827"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M17.5 7.08335V14.1667C17.5 16.6667 16.25 18.3334 13.3333 18.3334H6.66667C3.75 18.3334 2.5 16.6667 2.5 14.1667V7.08335C2.5 4.58335 3.75 2.91669 6.66667 2.91669H13.3333C16.25 2.91669 17.5 4.58335 17.5 7.08335Z"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M13.0781 11.4167H13.0856"
+                stroke="#525252"
+                stroke-width="1.66667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M13.0781 13.9167H13.0856"
+                stroke="#525252"
+                stroke-width="1.66667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M9.99607 11.4167H10.0036"
+                stroke="#525252"
+                stroke-width="1.66667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M9.99607 13.9167H10.0036"
+                stroke="#525252"
+                stroke-width="1.66667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M6.91209 11.4167H6.91957"
+                stroke="#525252"
+                stroke-width="1.66667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M6.91209 13.9167H6.91957"
+                stroke="#525252"
+                stroke-width="1.66667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <svg
+              class="hidden dark:block"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6.66602 1.66675V4.16675"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M13.334 1.66675V4.16675"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M2.91602 7.57495H17.0827"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M17.5 7.08341V14.1667C17.5 16.6667 16.25 18.3334 13.3333 18.3334H6.66667C3.75 18.3334 2.5 16.6667 2.5 14.1667V7.08341C2.5 4.58341 3.75 2.91675 6.66667 2.91675H13.3333C16.25 2.91675 17.5 4.58341 17.5 7.08341Z"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M13.0781 11.4167H13.0856"
+                stroke="white"
+                stroke-width="1.66667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M13.0781 13.9167H13.0856"
+                stroke="white"
+                stroke-width="1.66667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M9.99607 11.4167H10.0036"
+                stroke="white"
+                stroke-width="1.66667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M9.99607 13.9167H10.0036"
+                stroke="white"
+                stroke-width="1.66667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M6.91209 11.4167H6.91957"
+                stroke="white"
+                stroke-width="1.66667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M6.91209 13.9167H6.91957"
+                stroke="white"
+                stroke-width="1.66667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <span
+              class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+              >تقویم</span
+            >
+          </div>
+        </div>
+        <div
+          class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+        >
+          <div class="flex items-center gap-2">
+            <svg
+              class="dark:hidden"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clip-path="url(#clip0_2009_3330)">
+                <path
+                  d="M7.49935 18.3334H12.4993C16.666 18.3334 18.3327 16.6667 18.3327 12.5V7.50002C18.3327 3.33335 16.666 1.66669 12.4993 1.66669H7.49935C3.33268 1.66669 1.66602 3.33335 1.66602 7.50002V12.5C1.66602 16.6667 3.33268 18.3334 7.49935 18.3334Z"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M8.48255 14.2916L5.94922 11.7583"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M8.48242 5.70831V14.2916"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M11.5176 5.70831L14.0509 8.24165"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M11.5176 14.2916V5.70831"
+                  stroke="#525252"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_2009_3330">
+                  <rect width="20" height="20" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+
+            <svg
+              class="hidden dark:block"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M7.49935 18.3334H12.4993C16.666 18.3334 18.3327 16.6667 18.3327 12.5001V7.50008C18.3327 3.33341 16.666 1.66675 12.4993 1.66675H7.49935C3.33268 1.66675 1.66602 3.33341 1.66602 7.50008V12.5001C1.66602 16.6667 3.33268 18.3334 7.49935 18.3334Z"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M8.48451 14.2916L5.95117 11.7583"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M8.48242 5.7085V14.2918"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M11.5176 5.7085L14.0509 8.24183"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M11.5176 14.2918V5.7085"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <span
+              class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+              >گزارشات</span
+            >
+          </div>
+        </div>
+        <div
+          class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+        >
+          <div class="flex items-start gap-2">
+            <svg
+              class="dark:hidden"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M2.5 7.59163V12.4C2.5 14.1666 2.5 14.1666 4.16667 15.2916L8.75 17.9416C9.44167 18.3416 10.5667 18.3416 11.25 17.9416L15.8333 15.2916C17.5 14.1666 17.5 14.1666 17.5 12.4083V7.59163C17.5 5.8333 17.5 5.8333 15.8333 4.7083L11.25 2.0583C10.5667 1.6583 9.44167 1.6583 8.75 2.0583L4.16667 4.7083C2.5 5.8333 2.5 5.8333 2.5 7.59163Z"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <svg
+              class="hidden dark:block"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M2.5 7.59163V12.4C2.5 14.1666 2.5 14.1666 4.16667 15.2916L8.75 17.9416C9.44167 18.3416 10.5667 18.3416 11.25 17.9416L15.8333 15.2916C17.5 14.1666 17.5 14.1666 17.5 12.4083V7.59163C17.5 5.8333 17.5 5.8333 15.8333 4.7083L11.25 2.0583C10.5667 1.6583 9.44167 1.6583 8.75 2.0583L4.16667 4.7083C2.5 5.8333 2.5 5.8333 2.5 7.59163Z"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <span
+              class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+              >تنظیمات</span
+            >
+          </div>
+        </div>
+        <div
+          class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+        >
+          <div class="flex items-center gap-2">
+            <svg
+              class="dark:hidden"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15 15.7166H14.3667C13.7 15.7166 13.0667 15.975 12.6 16.4416L11.175 17.85C10.525 18.4917 9.46667 18.4917 8.81667 17.85L7.39166 16.4416C6.925 15.975 6.28333 15.7166 5.625 15.7166H5C3.61667 15.7166 2.5 14.6083 2.5 13.2417V4.14996C2.5 2.7833 3.61667 1.67499 5 1.67499H15C16.3833 1.67499 17.5 2.7833 17.5 4.14996V13.2417C17.5 14.6 16.3833 15.7166 15 15.7166Z"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M5.83398 7.63336C5.83398 6.85836 6.46732 6.22498 7.24232 6.22498C8.01732 6.22498 8.65065 6.85836 8.65065 7.63336C8.65065 9.20003 6.42565 9.36669 5.93398 10.8584C5.83398 11.1667 6.09232 11.475 6.41732 11.475H8.65065"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M13.3655 11.4667V6.70838C13.3655 6.49171 13.2238 6.3 13.0155 6.24166C12.8072 6.18333 12.5822 6.26666 12.4655 6.45C11.8655 7.41666 11.2155 8.51667 10.6488 9.48334C10.5572 9.64167 10.5572 9.85001 10.6488 10.0083C10.7405 10.1667 10.9155 10.2666 11.1072 10.2666H14.1655"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <svg
+              class="hidden dark:block"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15 15.7167H14.3667C13.7 15.7167 13.0667 15.975 12.6 16.4417L11.175 17.8501C10.525 18.4917 9.46667 18.4917 8.81667 17.8501L7.39166 16.4417C6.925 15.975 6.28333 15.7167 5.625 15.7167H5C3.61667 15.7167 2.5 14.6084 2.5 13.2417V4.15002C2.5 2.78336 3.61667 1.67505 5 1.67505H15C16.3833 1.67505 17.5 2.78336 17.5 4.15002V13.2417C17.5 14.6001 16.3833 15.7167 15 15.7167Z"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-miterlimit="10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M5.83398 7.63324C5.83398 6.85824 6.46732 6.22485 7.24232 6.22485C8.01732 6.22485 8.65065 6.85824 8.65065 7.63324C8.65065 9.19991 6.42565 9.36657 5.93398 10.8582C5.83398 11.1666 6.09232 11.4749 6.41732 11.4749H8.65065"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M13.3655 11.4666V6.70826C13.3655 6.49159 13.2238 6.29987 13.0155 6.24154C12.8072 6.18321 12.5822 6.26654 12.4655 6.44987C11.8655 7.41654 11.2155 8.51655 10.6488 9.48322C10.5572 9.64155 10.5572 9.84989 10.6488 10.0082C10.7405 10.1666 10.9155 10.2665 11.1072 10.2665H14.1655"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <span
+              class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+              >پشتیبانی</span
+            >
+          </div>
+        </div>
+        <div
+          class="w-full rounded-lg p-[12px_20px] hover:bg-[#F5FAFF] dark:hover:bg-[#041933] hover:text-[#007BFF] cursor-pointer"
+        >
+          <div class="flex items-center gap-2">
+            <svg
+              class="dark:hidden"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10.1322 9.05835C10.0488 9.05002 9.94883 9.05002 9.85716 9.05835C7.87383 8.99169 6.29883 7.36669 6.29883 5.36669C6.29883 3.32502 7.94883 1.66669 9.99883 1.66669C12.0405 1.66669 13.6988 3.32502 13.6988 5.36669C13.6905 7.36669 12.1155 8.99169 10.1322 9.05835Z"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M5.96562 12.1333C3.94896 13.4833 3.94896 15.6833 5.96562 17.025C8.25729 18.5583 12.0156 18.5583 14.3073 17.025C16.324 15.675 16.324 13.475 14.3073 12.1333C12.024 10.6083 8.26562 10.6083 5.96562 12.1333Z"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <svg
+              class="hidden dark:block"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10.1341 9.05841C10.0508 9.05008 9.95078 9.05008 9.85911 9.05841C7.87578 8.99175 6.30078 7.36675 6.30078 5.36675C6.30078 3.32508 7.95078 1.66675 10.0008 1.66675C12.0424 1.66675 13.7008 3.32508 13.7008 5.36675C13.6924 7.36675 12.1174 8.99175 10.1341 9.05841Z"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M5.96758 12.1333C3.95091 13.4833 3.95091 15.6833 5.96758 17.0249C8.25924 18.5583 12.0176 18.5583 14.3092 17.0249C16.3259 15.6749 16.3259 13.4749 14.3092 12.1333C12.0259 10.6083 8.26758 10.6083 5.96758 12.1333Z"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <span
+              class="text-[16px] text-[#525252] dark:text-[#FFFFFF] font-bold"
+              >پروفایل</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="w-full px-3 mt-[139px] md:flex md:flex-col">
+        <div
+          class="bg-[#F7F7F7] dark:bg-[#0C1B31] w-full rounded-lg p-1 flex justify-between"
+        >
+          <div
+            class="flex bg-white dark:bg-[#0C1B31] py-[6px] w-[48%] rounded-md items-center gap-3 justify-center cursor-pointer"
+            id="light-mode-click-hamburger"
+          >
+            <svg
+              class="dark:hidden"
+              width="17"
+              height="16"
+              viewBox="0 0 17 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8.49935 12.3333C10.8926 12.3333 12.8327 10.3932 12.8327 7.99996C12.8327 5.60673 10.8926 3.66663 8.49935 3.66663C6.10612 3.66663 4.16602 5.60673 4.16602 7.99996C4.16602 10.3932 6.10612 12.3333 8.49935 12.3333Z"
+                stroke="#525252"
+                stroke-width="1.16667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M13.2597 12.7599L13.173 12.6733M13.173 3.32659L13.2597 3.23992L13.173 3.32659ZM3.73967 12.7599L3.82634 12.6733L3.73967 12.7599ZM8.49967 1.38659V1.33325V1.38659ZM8.49967 14.6666V14.6133V14.6666ZM1.88634 7.99992H1.83301H1.88634ZM15.1663 7.99992H15.113H15.1663ZM3.82634 3.32659L3.73967 3.23992L3.82634 3.32659Z"
+                stroke="#525252"
+                stroke-width="1.55556"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <svg
+              class="hidden dark:block"
+              width="17"
+              height="16"
+              viewBox="0 0 17 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8.5013 12.3334C10.8945 12.3334 12.8346 10.3933 12.8346 8.00008C12.8346 5.60685 10.8945 3.66675 8.5013 3.66675C6.10807 3.66675 4.16797 5.60685 4.16797 8.00008C4.16797 10.3933 6.10807 12.3334 8.5013 12.3334Z"
+                stroke="#7A7A7A"
+                stroke-width="1.16667"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M13.2607 12.7602L13.174 12.6735M13.174 3.32683L13.2607 3.24016L13.174 3.32683ZM3.74065 12.7602L3.82732 12.6735L3.74065 12.7602ZM8.50065 1.38683V1.3335V1.38683ZM8.50065 14.6668V14.6135V14.6668ZM1.88732 8.00016H1.83398H1.88732ZM15.1673 8.00016H15.114H15.1673ZM3.82732 3.32683L3.74065 3.24016L3.82732 3.32683Z"
+                stroke="#7A7A7A"
+                stroke-width="1.55556"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <span
+              class="text-[14px] text-[#525252] dark:text-[#7A7A7A] font-semibold"
+              >روشن</span
+            >
+          </div>
+
+          <div
+            class="flex py-[6px] w-[48%] dark:bg-[#002247] rounded-md items-center gap-3 justify-center cursor-pointer"
+            id="dark-mode-click-hamburger"
+          >
+            <svg
+              class="dark:hidden"
+              width="17"
+              height="16"
+              viewBox="0 0 17 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M1.85307 8.27997C2.09307 11.7133 5.0064 14.5066 8.49307 14.66C10.9531 14.7666 13.1531 13.62 14.4731 11.8133C15.0197 11.0733 14.7264 10.58 13.8131 10.7466C13.3664 10.8266 12.9064 10.86 12.4264 10.84C9.1664 10.7066 6.49973 7.97997 6.4864 4.75997C6.47973 3.89331 6.65973 3.07331 6.9864 2.32664C7.3464 1.49997 6.91307 1.10664 6.07973 1.45997C3.43973 2.57331 1.63307 5.23331 1.85307 8.27997Z"
+                stroke="#808080"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <svg
+              class="hidden dark:block"
+              width="17"
+              height="16"
+              viewBox="0 0 17 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M1.85209 8.27997C2.09209 11.7133 5.00542 14.5066 8.49209 14.66C10.9521 14.7666 13.1521 13.62 14.4721 11.8133C15.0188 11.0733 14.7254 10.58 13.8121 10.7466C13.3654 10.8266 12.9054 10.86 12.4254 10.84C9.16542 10.7066 6.49876 7.97997 6.48542 4.75997C6.47876 3.89331 6.65876 3.07331 6.98542 2.32664C7.34542 1.49997 6.91209 1.10664 6.07876 1.45997C3.43876 2.57331 1.63209 5.23331 1.85209 8.27997Z"
+                stroke="white"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <span
+              class="text-[14px] text-[#808080] dark:text-[#FFFFFF] font-semibold"
+              >تاریک</span
+            >
+          </div>
+        </div>
+
+        <div class="w-full bg-[#E9E9E9] h-[1px] mt-7"></div>
+
+        <div class="flex w-full gap-4 my-5 cursor-pointer">
+          <svg
+            class="dark:hidden"
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g clip-path="url(#clip0_2010_2699)">
+              <path
+                d="M7.41699 6.29995C7.67533 3.29995 9.21699 2.07495 12.592 2.07495H12.7003C16.4253 2.07495 17.917 3.56662 17.917 7.29162V12.725C17.917 16.45 16.4253 17.9416 12.7003 17.9416H12.592C9.24199 17.9416 7.70033 16.7333 7.42533 13.7833"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M12.4999 10H3.0166"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M4.87467 7.20837L2.08301 10L4.87467 12.7917"
+                stroke="#525252"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_2010_2699">
+                <rect width="20" height="20" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+
+          <svg
+            class="hidden dark:block"
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g clip-path="url(#clip0_82_8174)">
+              <path
+                d="M7.41602 6.29995C7.67435 3.29995 9.21602 2.07495 12.591 2.07495H12.6993C16.4243 2.07495 17.916 3.56662 17.916 7.29162V12.725C17.916 16.45 16.4243 17.9416 12.6993 17.9416H12.591C9.24102 17.9416 7.69935 16.7333 7.42435 13.7833"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M12.499 10H3.01562"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M4.87565 7.20825L2.08398 9.99992L4.87565 12.7916"
+                stroke="white"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_82_8174">
+                <rect width="20" height="20" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+
+          <span
+            class="text-[14px] text-[#525252] dark:text-[#FFFFFF] font-semibold"
+            ><a href="../index.html">خروج</a></span
+          >
+        </div>
+      </section>
+    </section>
+
+    <!-- left part -->
+    <section
+      class="bg-[#FEFEFE] dark:bg-[#060C18] container px-3 md:px-18 mx-auto"
+    >
+      <!-- profile picture  -->
+      <section class="flex items-center gap-3 mt-10 h-fit md:hidden">
+        <img
+          src="../src/assets/images/user5.png"
+          alt="profile-picture"
+          class="w-[56px] h-[56px] object-cover md:hidden"
+        />
+        <div class="flex flex-col gap-y-2">
+          <h4
+            class="text-[18px] font-extrabold text-[#242424] dark:text-[#FFFFFF]"
+          >
+            سلام پارسا!
+          </h4>
+          <p
+            class="text-[14px] font-semibold text-[#7D7D7F] dark:text-[#848890]"
+          >
+            امروز: <span id="sidebar-date"></span>
+          </p>
+        </div>
+      </section>
+
+      <div
+        class="w-full bg-[#F5F6F8] h-[1px] mt-7 dark:opacity-0 md:hidden"
+      ></div>
+
+      <!-- today tasks add  -->
+      <section class="flex flex-col gap-4 mt-8">
+        <div class="flex flex-col gap-1">
+          <h4
+            class="text-[16px] text-[#242424] dark:text-[#FFFFFF] text-right font-extrabold"
+          >
+            تسک‌های امروز
+          </h4>
+          <h1
+            class="text-[12px] text-[#696969] dark:text-[#848890] text-right font-light"
+            id="number-of-uncompleted-tasks"
+          >
+            تسکی برای امروز نداری!
+          </h1>
+        </div>
+
+        <div
+          class="flex items-start p-4 bg-[#FFFFFF] dark:bg-[#091120] border border-dashed border-[#CCCCCC] dark:border-[#203E62] rounded-[10px]"
+          id="add-new-tasks"
+        >
+          <div class="flex items-center gap-1 cursor-pointer">
+            <!-- light svg  -->
+            <svg
+              class="dark:hidden"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 12H18"
+                stroke="#007BFF"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M12 18V6"
+                stroke="#007BFF"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <!-- dark svg  -->
+            <svg
+              class="hidden dark:block"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 12H18"
+                stroke="#57A8FF"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M12 18V6"
+                stroke="#57A8FF"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+            <p
+              class="text-[14px] text-right font-semibold text-[#007BFF] dark:text-[#57A8FF]"
+            >
+              افزودن وظیفه جدید
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- today task add texts  -->
+      <section class="flex flex-col items-center gap-6 mt-[38px]" id="texttask">
+        <img
+          src="../src/assets/images/what-works.png"
+          alt=""
+          class="h-[172px] w-[211px] object-cover mx-auto"
+        />
+
+        <div class="flex flex-col items-center gap-2">
+          <h3 class="text-[16px] font-extrabold text-[#7D7D7F]">
+            چه کارهایی امروز برای انجام داری؟
+          </h3>
+          <p class="text-[14px] font-semibold text-[#AFAEB2] text-center px-7">
+            میتونی الان تسک‌هاتو اینجا بنویسی و برنامه ریزی رو شروع کنی!
+          </p>
+        </div>
+      </section>
+
+      <!-- today task input  -->
+      <section
+        class="flex-col p-4 mt-8 border border-[#E9E9E9] dark:border-[#3D3D3D] shadow-lg rounded-[12px] hidden"
+        id="form-section"
+      >
+        <form
+          action=""
+          class="flex flex-col space-y-4"
+          id="valid-form"
+          novalidate
+        >
+          <div class="flex flex-col space-y-6">
+            <div class="flex flex-col gap-2">
+              <input
+                type="text"
+                class="text-[14px] text-[#323233] dark:text-[#FFFFFF] font-semibold text-right placeholder-[#7D7D7F] dark:placeholder-[#FFFFFF] outline-none focus:ring-0 focus:outline-none focus:shadow-none"
+                placeholder="نام تسک"
+                required
+                id="task-name-input"
+              />
+
+              <input
+                type="text"
+                name="input-text"
+                id="description-input"
+                placeholder="توضیحات"
+                class="text-[#646466] dark:text-[#83878F] text-[12px] font-light placeholder-[#AFAEB2] dark:placeholder-[#83878F] outline-none focus:ring-0 focus:outline-none focus:shadow-none"
+                required
+              />
+            </div>
+
+            <div
+              class="flex items-center gap-1 px-2 py-1 w-fit border rounded-sm border-[#E9E9E9] dark:border-[#83878F] cursor-pointer"
+              id="tags-dropdown"
+            >
+              <svg
+                id="tags-dropdown-open"
+                width="16"
+                height="17"
+                viewBox="0 0 16 17"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M13.9336 3.31328V10.9399C13.9336 11.3933 13.6203 11.96 13.2336 12.2L8.78026 14.9866C8.34693 15.2533 7.66693 15.2266 7.26026 14.92L2.66026 11.4666C2.33359 11.22 2.06693 10.6866 2.06693 10.28V3.31328C2.06693 2.14661 3.34693 1.43997 4.34026 2.05331L7.29359 3.89995C7.68693 4.14661 8.32693 4.14661 8.72026 3.89995L11.6736 2.05331C12.6536 1.43997 13.9336 2.15328 13.9336 3.31328Z"
+                  fill="#AFAEB2"
+                  stroke="#AFAEB2"
+                  class="dark:fill-[#FFFFFF] dark:stroke-[#FFFFFF]"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <svg
+                class="hidden"
+                id="tags-dropdown-close"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M3.51661 2.58331H13.0499C13.6166 2.58331 14.325 2.97498 14.625 3.45831L18.1083 9.02498C18.4416 9.56665 18.4083 10.4166 18.025 10.925L13.7083 16.675C13.4 17.0833 12.7333 17.4166 12.225 17.4166H3.51661C2.05828 17.4166 1.17498 15.8166 1.94165 14.575L4.24995 10.8833C4.55828 10.3916 4.55828 9.59165 4.24995 9.09998L1.94165 5.40831C1.17498 4.18331 2.06661 2.58331 3.51661 2.58331Z"
+                  stroke="#AFAEB2"
+                  class="dark:stroke-[#FFFFFF]"
+                  stroke-width="1.25"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <h3
+                class="text-[12px] text-[#AFAEB2] dark:text-[#FFFFFF] text-right font-semibold"
+              >
+                تگ‌ها
+              </h3>
+            </div>
+
+            <div
+              class="flex p-[10px] gap-4 border shadow-sm w-fit border-[#EBEDEF] dark:border-[#293242] dark:bg-[#0B192D] rounded-lg"
+              id="tags-importance"
+            >
+              <div
+                class="px-2 py-[2px] rounded-[4px] bg-[#C3FFF1] dark:bg-[#233332] cursor-pointer"
+                id="default-select-easy"
+              >
+                <h3 class="text-[12px] font-bold text-right text-[#11A483]">
+                  پایین
+                </h3>
+              </div>
+
+              <div
+                class="w-[1px] h-[20px] bg-[#FFEFD6] dark:bg-[#293242]"
+              ></div>
+
+              <div
+                class="px-2 py-[2px] rounded-[4px] bg-[#FFEFD6] dark:bg-[#302F2D] cursor-pointer"
+                id="default-select-medium"
+              >
+                <h3 class="text-[12px] font-bold text-right text-[#FFAF37]">
+                  متوسط
+                </h3>
+              </div>
+
+              <div
+                class="w-[1px] h-[20px] bg-[#EBEDEF] dark:bg-[#293242]"
+              ></div>
+
+              <div
+                class="px-2 py-[2px] rounded-[4px] bg-[#FFE2DB] dark:bg-[#3D2327] cursor-pointer"
+                id="default-select-hard"
+              >
+                <h3 class="text-[12px] font-bold text-right text-[#FF5F37]">
+                  بالا
+                </h3>
+              </div>
+            </div>
+
+            <div class="hidden w-fit" id="selected-tag">
+              <!-- easy  -->
+              <div
+                class="px-2 py-1 rounded-[4px] bg-[#C3FFF1] dark:bg-[#233332] flex items-center gap-2 cursor-pointer"
+                id="selected-tag-easy"
+              >
+                <svg
+                  class="dark:hidden"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6.66406 13.3334L13.3307 6.66675"
+                    stroke="#323233"
+                    stroke-width="0.999925"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M13.3307 13.3334L6.66406 6.66675"
+                    stroke="#323233"
+                    stroke-width="0.999925"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+
+                <svg
+                  class="hidden dark:block"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6.66406 13.3334L13.3307 6.66675"
+                    stroke="white"
+                    stroke-width="0.999925"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M13.3307 13.3334L6.66406 6.66675"
+                    stroke="white"
+                    stroke-width="0.999925"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+
+                <h3 class="text-[12px] font-bold text-right text-[#11A483]">
+                  پایین
+                </h3>
+              </div>
+
+              <!-- medium -->
+              <div
+                class="px-2 py-1 rounded-[4px] bg-[#FFEFD6] dark:bg-[#302F2D] flex items-center gap-2 cursor-pointer"
+                id="selected-tag-medium"
+              >
+                <svg
+                  class="dark:hidden"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6.66406 13.3334L13.3307 6.66675"
+                    stroke="#323233"
+                    stroke-width="0.999925"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M13.3307 13.3334L6.66406 6.66675"
+                    stroke="#323233"
+                    stroke-width="0.999925"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+
+                <svg
+                  class="hidden dark:block"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6.66406 13.3334L13.3307 6.66675"
+                    stroke="white"
+                    stroke-width="0.999925"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M13.3307 13.3334L6.66406 6.66675"
+                    stroke="white"
+                    stroke-width="0.999925"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+
+                <h3 class="text-[12px] font-bold text-right text-[#FFAF37]">
+                  متوسط
+                </h3>
+              </div>
+
+              <!-- hard  -->
+              <div
+                class="px-2 py-1 rounded-[4px] bg-[#FFE2DB] dark:bg-[#3D2327] flex items-center gap-2 cursor-pointer"
+                id="selected-tag-hard"
+              >
+                <svg
+                  class="dark:hidden"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6.66406 13.3334L13.3307 6.66675"
+                    stroke="#323233"
+                    stroke-width="0.999925"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M13.3307 13.3334L6.66406 6.66675"
+                    stroke="#323233"
+                    stroke-width="0.999925"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+
+                <svg
+                  class="hidden dark:block"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6.66406 13.3334L13.3307 6.66675"
+                    stroke="white"
+                    stroke-width="0.999925"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M13.3307 13.3334L6.66406 6.66675"
+                    stroke="white"
+                    stroke-width="0.999925"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+
+                <h3 class="text-[12px] font-bold text-right text-[#FF5F37]">
+                  بالا
+                </h3>
+              </div>
+            </div>
+
+            <div
+              class="w-full mt-[-4] h-[1px] bg-[#E9E9E9] dark:bg-[#3D3D3D]"
+            ></div>
+
+            <div class="flex flex-row-reverse items-center gap-[6px] -mt-2">
+              <button
+                class="py-[6px] px-4 w-fit bg-[#007BFF] dark:bg-[#002247] rounded-md cursor-pointer"
+              >
+                <h3
+                  class="text-[#FFFFFF] text-[12px] font-semibold"
+                  type="submit"
+                >
+                  اضافه کردن تسک
+                </h3>
+              </button>
+
+              <button
+                class="flex p-1 bg-[#F5F5F5] dark:bg-[#002247] items-center justify-center rounded-md cursor-pointer"
+                id="close-form"
+              >
+                <svg
+                  class="dark:hidden"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 22 22"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5.99414 16.0027L15.9993 5.9975"
+                    stroke="#9E9E9E"
+                    stroke-width="1.50067"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M15.9993 16.0027L5.99414 5.9975"
+                    stroke="#9E9E9E"
+                    stroke-width="1.50067"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+
+                <svg
+                  class="hidden dark:block"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 22 22"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5.99414 16.0028L15.9993 5.99756"
+                    stroke="#F2F2F2"
+                    stroke-width="1.50067"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M15.9993 16.0028L5.99414 5.99756"
+                    stroke="#F2F2F2"
+                    stroke-width="1.50067"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- today tasks that need to be done  -->
+      <section
+        class="flex flex-col gap-4 mt-4"
+        id="today-tasks-need-to-done"
+      ></section>
+
+      <!-- today done tasks  -->
+      <section class="flex flex-col gap-4 mt-[50px]">
+        <div class="flex flex-col gap-1">
+          <h4
+            class="text-[16px] text-[#242424] dark:text-[#FFFFFF] font-extrabold"
+          >
+            تسک‌های انجام شده
+          </h4>
+          <h3
+            class="text-[12px] text-[#696969] dark:text-[#848890] font-light"
+            id="number-of-tasks-completed"
+          >
+            تسکی انجام داده نشده!
+          </h3>
+        </div>
+
+        <div class="flex flex-col gap-4" id="today-done-tasks"></div>
+      </section>
+    </section>
+
+    <script src="../src/main.js" type="module"></script>
+    <script src="../src/new-date.js" type="module"></script>
+  </body>
+</html>
